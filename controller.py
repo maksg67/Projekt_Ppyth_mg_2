@@ -41,85 +41,23 @@ class Pensjonariusz:
         self.coordinates = dom.coordinates
 
 
-def add_dom(nazwa, lokalizacja):
-    d = DomOpieki(nazwa, lokalizacja)
-    domy.append(d)
-    return d
+def load_data():
+    obiekty_domy = []
+    for d in domy:
+        obiekty_domy.append(DomOpieki(d["nazwa"], d["lokalizacja"]))
 
+    obiekty_prac = []
+    for p in pracownicy:
+        dom = next((x for x in obiekty_domy if x.nazwa == p["dom"]), None)
+        if dom:
+            obiekty_prac.append(Pracownik(p["imie"], p["nazwisko"], p["wiek"], p["rola"], dom))
+            dom.pracownicy.append(obiekty_prac[-1])
 
-def remove_dom(index):
-    d = domy[index]
-    for p in d.pracownicy:
-        pracownicy.remove(p)
-    for p in d.pensjonariusze:
-        pensjonariusze.remove(p)
-    domy.pop(index)
+    obiekty_pens = []
+    for p in pensjonariusze:
+        dom = next((x for x in obiekty_domy if x.nazwa == p["dom"]), None)
+        if dom:
+            obiekty_pens.append(Pensjonariusz(p["imie"], p["nazwisko"], p["wiek"], p["choroby"], dom))
+            dom.pensjonariusze.append(obiekty_pens[-1])
 
-
-def update_dom(index, nazwa, lokalizacja):
-    d = domy[index]
-    d.nazwa = nazwa
-    d.lokalizacja = lokalizacja
-    d.coordinates = get_coordinates(lokalizacja)
-
-
-def add_pracownik(imie, nazwisko, wiek, rola, nazwa_domu):
-    d = next((x for x in domy if x.nazwa == nazwa_domu), None)
-    if d is None:
-        return False
-    p = Pracownik(imie, nazwisko, wiek, rola, d)
-    pracownicy.append(p)
-    d.pracownicy.append(p)
-    return True
-
-
-def remove_pracownik(index):
-    p = pracownicy[index]
-    p.dom.pracownicy.remove(p)
-    pracownicy.pop(index)
-
-
-def update_pracownik(index, imie, nazwisko, wiek, rola, nazwa_domu):
-    p = pracownicy[index]
-    p.imie = imie
-    p.nazwisko = nazwisko
-    p.wiek = wiek
-    p.rola = rola
-    if p.dom.nazwa != nazwa_domu:
-        p.dom.pracownicy.remove(p)
-        d = next((x for x in domy if x.nazwa == nazwa_domu), None)
-        if d:
-            p.dom = d
-            d.pracownicy.append(p)
-            p.coordinates = d.coordinates
-
-
-def add_pensjonariusz(imie, nazwisko, wiek, choroby, nazwa_domu):
-    d = next((x for x in domy if x.nazwa == nazwa_domu), None)
-    if d is None:
-        return False
-    p = Pensjonariusz(imie, nazwisko, wiek, choroby, d)
-    pensjonariusze.append(p)
-    d.pensjonariusze.append(p)
-    return True
-
-
-def remove_pensjonariusz(index):
-    p = pensjonariusze[index]
-    p.dom.pensjonariusze.remove(p)
-    pensjonariusze.pop(index)
-
-
-def update_pensjonariusz(index, imie, nazwisko, wiek, choroby, nazwa_domu):
-    p = pensjonariusze[index]
-    p.imie = imie
-    p.nazwisko = nazwisko
-    p.wiek = wiek
-    p.choroby = choroby
-    if p.dom.nazwa != nazwa_domu:
-        p.dom.pensjonariusze.remove(p)
-        d = next((x for x in domy if x.nazwa == nazwa_domu), None)
-        if d:
-            p.dom = d
-            d.pensjonariusze.append(p)
-            p.coordinates = d.coordinates
+    return obiekty_domy, obiekty_prac, obiekty_pens
