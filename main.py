@@ -3,7 +3,7 @@ import tkintermapview
 import controller
 
 root = Tk()
-root.title("Mapbook_AB")
+root.title("Projekt_MG")
 root.geometry("1700x900")
 
 domy, pracownicy, pensjonariusze = controller.load_data()
@@ -43,21 +43,29 @@ def clear_markers():
 
 def rysuj_markery_klasy():
     clear_markers()
+    ft = filter_text.lower()
+
     if active_list == "domy":
         for d in domy:
-            all_markers.append(
-                map_widget.set_marker(d.coordinates[0], d.coordinates[1], text=d.nazwa)
-            )
+            if ft in d.nazwa.lower():
+                all_markers.append(
+                    map_widget.set_marker(d.coordinates[0], d.coordinates[1], text=d.nazwa)
+                )
+
     elif active_list == "pracownicy":
         for p in pracownicy:
-            all_markers.append(
-                map_widget.set_marker(p.coordinates[0], p.coordinates[1], text=p.imie)
-            )
+            if ft in p.imie.lower():
+                all_markers.append(
+                    map_widget.set_marker(p.coordinates[0], p.coordinates[1], text=p.imie)
+                )
+
     elif active_list == "pensjonariusze":
         for p in pensjonariusze:
-            all_markers.append(
-                map_widget.set_marker(p.coordinates[0], p.coordinates[1], text=p.imie)
-            )
+            if ft in p.imie.lower():
+                all_markers.append(
+                    map_widget.set_marker(p.coordinates[0], p.coordinates[1], text=p.imie)
+                )
+
 
 
 def pokaz_marker(obj):
